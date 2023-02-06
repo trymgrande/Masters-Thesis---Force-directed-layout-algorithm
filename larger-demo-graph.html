@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    .node {
+        fill: #ccc;
+        stroke: #fff;
+        stroke-width: 2px;
+    }
+    /*add css for links*/
+    
+    .link {
+        stroke: #777;
+        stroke-width: 2px;
+    }
+
+</style>
+<body>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script>
+
+        // source: https://gist.github.com/capfsb/3fd1b700b4732debb29aefd576cf54ef
+        let prevTime = performance.now();
+        let frames = 0
+
+        // function measureFPS() {
+        //     const time = performance.now();
+        //     const frametime = time - prevTime;
+        //     prevTime = time;
+        //     console.info('Frametime', frametime);
+        // };
+
+        function measureFrameTime() {
+            const time = performance.now();
+            frames++;
+            if (time > prevTime + 1000) {
+                let fps = ( ( frames * 1000 ) / ( time - prevTime ) );
+                prevTime = time;
+                frames = 0;
+
+                console.info('FPS: ', fps);
+            }
+        }
+
+        console.time('initial layout loading time');
+
+
+        // set a width and height for our SVG
+        var width = 1000, height = 1000;
+
+        // setup links
+        var links = [
+            { source: 'Baratheon', target:'Lannister' },
+            { source: 'Baratheon', target:'Stark' },
+            { source: 'Lannister', target:'Stark' },
+            { source: 'Stark', target:'Bolton' },
+        ];
+
+        // create graph with x number of new nodes with 2*V number of links
+        for (var i = 0; i < 100; i++) {
+            newNode = (Math.random() + 1).toString(36).substring(7);    
+            otherNode1 = links[Math.round(Math.random() * (links.length - 1))].source
+            otherNode2 = links[Math.round(Math.random() * (links.length - 1))].source
+            links.push({ source: otherNode1, target:newNode });
+            links.push({ source: otherNode2, target:newNode });
+        }
+
+        // create empty nodes array
+        var nodes = {};
+
+        var newNodes = [];
+
+        for (var i = 0; i < 100; i++) {
+            newNode = (Math.random() + 1).toString(36).substring(7);
+            newNodes.push({name: newNode});
+            
+        }
+
+        var edges = [];
+        for (var i = 0; i < 150; i++) {
+            num1 = Math.floor(Math.random() * newNodes.length);
+            num2 = Math.floor(Math.random() * newNodes.length);
+            edges.push({source: newNodes[num1], target: newNodes[num2]});
+
+        }
+
+        // compute nodes from links data
+        links.forEach(function(link) {
+            link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
+            link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});        
+        });
+
+
+        // add a SVG to the body for our viz
+        var svg=d3.select('body').append('svg')
+            .attr('width', width)
+            .attr('height', height);
+
+
+        // const simulation = d3.forceSimulation(newNodes)
+        //     .force("link", d3.forceLink(edges).id(d => d.id).distance(0).strength(1))
+
+
+        // use the force
+        var force = d3.layout.force()
+            .size([width, height])
+            .nodes(d3.values(newNodes))
+            .links(edges)
+            .on("tick", tick)
+            .linkDistance(1000)
+            .start();
+
+        // add links
+        var link = svg.selectAll('.link')
+            .data(edges)
+            .enter().append('line')
+            .attr('class', 'link'); 
+
+        // add nodes
+        var node = svg.selectAll('.node')
+            .data(force.nodes())
+            .enter().append('circle')
+            .attr('class', 'node')
+            .attr('r', width * 0.03)
+            .on('click', function(d) {console.log(d)});
+
+        console.timeEnd('initial layout loading time'); //Prints something like that-> test: 11374.004ms
+
+
+        // what to do 
+        function tick(e) {
+            // console.log('tick');
+            measureFrameTime();
+
+            node.attr('cx', function(d) { return d.x; })
+                .attr('cy', function(d) { return d.y; })
+                .call(force.drag);
+                
+            link.attr('x1', function(d) { return d.source.x; })
+                .attr('y1', function(d) { return d.source.y; })
+                .attr('x2', function(d) { return d.target.x; })
+                .attr('y2', function(d) { return d.target.y; });
+
+            // console.log("nodes", nodes)
+            // console.log("links", links)
+
+        }
+    
+    </script>
+</body>
