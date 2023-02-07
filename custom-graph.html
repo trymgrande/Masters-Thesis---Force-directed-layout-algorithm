@@ -1,107 +1,103 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style>
 
+<style>
     .node {
         fill: #ccc;
         stroke: #fff;
         stroke-width: 2px;
     }
-    /*add css for links*/
-    
     .link {
         stroke: #777;
         stroke-width: 2px;
     }
-
 </style>
+
 <body>
-  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-  <script>
+  <script type="module">
+    import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
-// d3 = require("d3@6")
+  const gname = "graph";
+  const maxDepth = 3;
+  const getRandomName = () => (Math.random() * 8).toString();
+  let _ = { name: gname, children: [] };
+  function generateChildren(level, path) {
+    if (path.length >= maxDepth) return;
+    let newPath = [...path];
 
-
-const gname = "graph";
-const maxDepth = 3;
-const getRandomName = () => (Math.random() * 8).toString();
-let _ = { name: gname, children: [] };
-function generateChildren(level, path) {
-  if (path.length >= maxDepth) return;
-  let newPath = [...path];
-
-  let amountOfChildren = Math.floor(Math.random() * 6) + 1;
-  if (path.length == 0) {
-    amountOfChildren = 8;
-  }
-
-  for (let i = 0; i < amountOfChildren; i++) {
-    const _name = getRandomName();
-    console.log(i)
-
-    if (!level.children) {
-      level.children = [];
+    let amountOfChildren = Math.floor(Math.random() * 6) + 1;
+    if (path.length == 0) {
+      amountOfChildren = 8;
     }
 
-    level.children.push({ name: _name, children: [] });
+    for (let i = 0; i < amountOfChildren; i++) {
+      const _name = getRandomName();
+
+      if (!level.children) {
+        level.children = [];
+      }
+
+      level.children.push({ name: _name, children: [] });
+    }
+    newPath.push(amountOfChildren);
+    level.children.forEach((child) => generateChildren(child, newPath));
+    return level;
   }
-  newPath.push(amountOfChildren);
-  level.children.forEach((child) => generateChildren(child, newPath));
-  return level;
-}
 
-const data = generateChildren(_, []);
-console.log(data);
+  const data = generateChildren(_, []);
 
-
-const root = d3.hierarchy(data);
-  console.log(root.links());
-  const links = root.links();
-  const nodes = root.descendants();
-  const width = 1000;
-  const height = 1000;
-  const simulation = d3.forceSimulation(nodes)
+  const root = d3.hierarchy(data);
+    const links = root.links();
+    const nodes = root.descendants();
+    const width = 1000;
+    const height = 1000;
+    const simulation = d3.forceSimulation(nodes)
       .force("link", d3.forceLink(links).id(d => d.id).distance(0).strength(1))
       .force("charge", d3.forceManyBody().strength(-50))
       .force("x", d3.forceX())
       .force("y", d3.forceY())
       .tick(100);
 
-  const svg = d3.create("svg")
-      .attr("viewBox", [-width / 2, -height / 2, width, height]);
+    const svg = d3.select("body").append("svg")
+        .attr("viewBox", [-width / 2, -height / 2, width, height]);
 
-  const link = svg.append("g")
+    const link = svg.append("g")
       .attr("stroke", "#999")
       .attr("stroke-opacity", 0.6)
-    .selectAll("line")
-    .data(links)
-    .join("line");
+      .selectAll("line")
+      .data(links)
+      .join("line");
 
-  const node = svg.append("g")
+    const node = svg.append("g")
       .attr("fill", "#fff")
       .attr("stroke", "#000")
       .attr("stroke-width", 1.5)
-    .selectAll("circle")
-    .data(nodes)
-    .join("circle")
-      .attr("fill", d => d.children ? null : "#000")
-      .attr("stroke", d => d.children ? null : "#fff")
-      .attr("r", 3.5);
+      .selectAll("circle")
+      .data(nodes)
+      .join("circle")
+        .attr("fill", d => d.children ? null : "#000")
+        .attr("stroke", d => d.children ? null : "#fff")
+        .attr("r", 3.5);
 
-  node.append("title")
-      .text(d => d.data.name);
+    node.append("title")
+        .text(d => d.data.name);
 
-  link
-      .attr("x1", d => d.source.x)
-      .attr("y1", d => d.source.y)
-      .attr("x2", d => d.target.x)
-      .attr("y2", d => d.target.y);
+    link
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
 
-  node
-      .attr("cx", d => d.x)
-      .attr("cy", d => d.y);
+    node
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+
+  d3.select("body").append("svg")
+    .attr("width", 500)
+    .attr("height", 500);
+
+  svg.append(svg.node());
 
 
-
-</script>
+  </script>
 </body>
