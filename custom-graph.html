@@ -148,7 +148,7 @@
 			.selectAll("circle")
 			.data(nodes)
 			.join("circle")
-			.on('click', e => console.log(e))
+			.on('click', e => console.log(simulation.find(e.x, e.y)))
 			// .attr("r", nodeRadius)
 			.attr("r", nodeIncomingLinks)
 			.call(drag(simulation));
