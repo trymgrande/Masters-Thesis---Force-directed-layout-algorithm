@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 
+<style type="text/css">
+	#svg-container {
+		background-color: aliceblue;
+	}
+</style>
 <body>
 	<div id="svg-container"></div>
 
@@ -14,7 +19,7 @@
 
 	function generateGraph() {
 		let nodes = [];
-		for (let i = 0; i < 10; i++) {
+		for (let i = 0; i < 100; i++) {
 			let newName = (Math.random() + 1).toString(36).substring(7);
 			let newNode = {id: newName, group: 5, incomingLinks: 0};
             nodes.push(newNode);
@@ -120,9 +125,11 @@
 			// .stop()
 			.on("tick", ticked)
 			// .on("tick", t => console.log("tick"))
-			// .tick(100);
+			.tick(100);
 			// .stop()
 			;
+
+
 
 		// const svg = d3.create("svg")
 		const svg = d3.select("#svg-container").append("svg")
@@ -152,6 +159,16 @@
 			// .attr("r", nodeRadius)
 			.attr("r", nodeIncomingLinks)
 			.call(drag(simulation));
+
+			// // zoom and pan
+			// let zoom = d3.zoom()
+			// // .scaleExtent([1,2])
+			// // .translateExtent([[-width, -height], [width, height]])
+			// .on('zoom', handleZoom);
+
+			// d3.select('svg')
+			// 	.call(zoom);
+
 
 		// needed to freeze simulation
 		link
@@ -201,6 +218,15 @@
 		}
 
 		function ticked() {
+			let zoom = d3.zoom()
+			// .scaleExtent([1,2])
+			// .translateExtent([[-width, -height], [width, height]])
+			.on('zoom', handleZoom);
+
+			d3.select('svg')
+				.call(zoom);
+
+				
 			link
 			.attr("x1", d => d.source.x)
 			.attr("y1", d => d.source.y)
@@ -210,7 +236,13 @@
 			node
 			.attr("cx", d => d.x)
 			.attr("cy", d => d.y);
+
+
+
 		}
+
+		let data = [], zoom_width = 600, zoom_height = 400, numPoints = 100;
+
 
 		function drag(simulation) {
 			function dragstarted(event) {
@@ -235,6 +267,13 @@
 			.on("drag", dragged)
 			.on("end", dragended);
 		}
+
+		function handleZoom(e) {
+			d3.select('svg')
+				.attr('transform', e.transform);
+		}
+
+
 
 		return Object.assign(svg.node(), {scales: {color}});
 	}
