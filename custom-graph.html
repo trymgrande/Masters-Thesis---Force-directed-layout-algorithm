@@ -36,8 +36,8 @@
 		return {nodes: nodes, links: links};
 	}
 
-	function generateCustomGraph() {
-		let nodes = [];
+	function generateCustomGraph() { // TODO: class for nodes and/or edges?
+		let nodes = []; // TODO: refactor into [{id: 0, name: "open borders" ... }]
 		// node: id (name), group 5, description, bar (float)
 		let ids = ["open borders", "welfare state objection", "benefits to immigrant-receiving countries", "global benefits", "benefits to immigrant-sending countries", "benefits to immigrants", "brain drain", "proportion of people", "burden for taxpayers", "need of the provisions", "cuisine diversity", "global benefits", "immigrant labor", "double world GDP", "end of poverty", "one world", "innovation case for open borders", "peace case for open borders", "ghosts versus zombies", "remittance", "develop high skills", "constrained in their policy", "benefits to migrants", "concrete benefits to migrants", "stated and revealed preferences", "losing skilled people", "acquire skills, without migrating", "developed to the developing", "partial migration"];
 		for (let i = 0; i < ids.length; i++) {
@@ -46,6 +46,7 @@
 		}
 
 		let links = [];
+		// TODO: refactor into [{source: "x", target: "y"}]
 		let linksNames = [["proportion of people", "welfare state objection"], ["burden for taxpayers", "welfare state objection"], ["need of the provisions", "welfare state objection"], ["welfare state objection", "benefits to immigrant-receiving countries"], ["cuisine diversity", "benefits to immigrant-receiving countries"], ["global benefits", "benefits to immigrant-receiving countries"], ["immigrant labor", "benefits to immigrant-receiving countries"], ["benefits to immigrant-receiving countries", "open borders"], ["global benefits", "open borders"], ["double world GDP", "global benefits"], ["end of poverty", "global benefits"], ["one world", "global benefits"], ["innovation case for open borders", "global benefits"], ["peace case for open borders", "global benefits"], ["benefits to migrants", "open borders"], ["stated and revealed preferences", "benefits to migrants"], ["concrete benefits to migrants", "benefits to migrants"], ["benefits to immigrant-sending countries", "open borders"], ["ghosts versus zombies", "benefits to immigrant-sending countries"], ["remittance", "benefits to immigrant-sending countries"], ["develop high skills", "benefits to immigrant-sending countries"], ["constrained in their policy", "benefits to immigrant-sending countries"], ["brain drain", "benefits to immigrant-sending countries"], ["losing skilled people", "brain drain"], ["acquire skills, without migrating", "brain drain"], ["developed to the developing", "brain drain"], ["partial migration", "brain drain"]];
 		for (let i = 0; i < linksNames.length; i++) {
 			let sourceName = linksNames[i][0];
@@ -56,8 +57,6 @@
 		return {nodes: nodes, links: links};
 	}
 
-
-	let graph = generateCustomGraph();
 
 	function setLinksPerNode(graph) {
 		let nodes = graph.nodes;
@@ -98,7 +97,7 @@
 		return incomingNodes;
 	}
 
-	function calculatePageRank(graph, iterations, initialValue = 100) {
+	function calculatePageRank(graph, iterations = 100, initialValue = 100) {
 		/**
 		 * PR(A) = (incoming) => prev_PR(B)/B_out + prev_PR(C)/C_out
 		 */
@@ -127,13 +126,14 @@
 				graph.nodes[i].pageRank = 1;
 			}
 		}
-
 		return {nodes: graph.nodes, links: graph.links};
 	}
 
+	let graph = generateCustomGraph();
+
 	graph = setLinksPerNode(graph);
 
-	graph = calculatePageRank(graph, 100);
+	graph = calculatePageRank(graph);
 	
 	console.log(graph);
 
@@ -216,14 +216,39 @@
 			.attr("viewBox", [-width / 2, -height / 2, width, height])
 			.attr("style", "max-width: 100%; height: auto; height: intrinsic;");
 
-		const link = svg.append("g")
-			.attr("stroke", typeof linkStroke !== "function" ? linkStroke : null)
-			.attr("stroke-opacity", linkStrokeOpacity)
-			.attr("stroke-width", typeof linkStrokeWidth !== "function" ? linkStrokeWidth : null)
-			.attr("stroke-linecap", linkStrokeLinecap)
-			.selectAll("line")
+		// def for the arrow
+		svg.append("svg:defs").append("svg:marker")
+				.attr("id", "arrow")
+				.attr("viewBox", "0 -5 10 10")
+				.attr('refX', -20) //so that it comes towards the center.
+				.attr("markerWidth", 5)
+				.attr("markerHeight", 5)
+				.attr("orient", "auto")
+				.append("svg:path")
+				.attr("d", "M0,-5L10,0L0,5");
+
+		// old link
+		// const link = svg.append("g")
+		// 	.attr('id', 'link')
+		// 	.attr("stroke", typeof linkStroke !== "function" ? linkStroke : null)
+		// 	.attr("stroke-opacity", linkStrokeOpacity)
+		// 	.attr("stroke-width", typeof linkStrokeWidth !== "function" ? linkStrokeWidth : null)
+		// 	.attr("stroke-linecap", linkStrokeLinecap)
+		// 	.selectAll("line")
+		// 	.data(links)
+		// 	.join("line")
+		// 	;
+
+		// link connected to the arrow
+		const link = svg.selectAll("line.link")
 			.data(links)
-			.join("line");
+			.enter().append( "path" )
+			.attr( "class", "link" )
+			.style( "stroke", "#000" )
+			.attr('marker-start', (d) => "url(#arrow)")
+			.style( "stroke-width", 2 );
+
+
 
 		const node = svg.append("g")
 			.attr("fill", nodeFill)
@@ -238,6 +263,7 @@
 			.attr("r", nodepageRank)
 			.call(drag(simulation));
 
+
 			// // zoom and pan
 			// let zoom = d3.zoom()
 			// // .scaleExtent([1,2])
@@ -249,16 +275,16 @@
 
 
 		// needed to freeze simulation
-		link
-			.attr("x1", d => d.source.x)
-			.attr("y1", d => d.source.y)
-			.attr("x2", d => d.target.x)
-			.attr("y2", d => d.target.y)
-			;
-
-		node
-			.attr("cx", d => d.x)
-			.attr("cy", d => d.y);
+		// link
+		// 	.attr("x1", d => d.source.x)
+		// 	.attr("y1", d => d.source.y)
+		// 	.attr("x2", d => d.target.x)
+		// 	.attr("y2", d => d.target.y)
+		// 	;
+		//
+		// node
+		// 	.attr("cx", d => d.x)
+		// 	.attr("cy", d => d.y);
 
 		// node text
 
@@ -310,7 +336,8 @@
 			.attr("x1", d => d.source.x)
 			.attr("y1", d => d.source.y)
 			.attr("x2", d => d.target.x)
-			.attr("y2", d => d.target.y);
+			.attr("y2", d => d.target.y)
+			.attr( "d", (d) => "M" + d.source.x + "," + d.source.y + ", " + d.target.x + "," + d.target.y);
 
 			node
 			.attr("cx", d => d.x)
