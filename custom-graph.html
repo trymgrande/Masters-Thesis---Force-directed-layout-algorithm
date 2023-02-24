@@ -251,17 +251,36 @@
 
 
 		const node = svg.append("g")
-			.attr("fill", nodeFill)
+			// .attr("fill", nodeFill)
 			.attr("stroke", nodeStroke*nodepageRank)
 			.attr("stroke-opacity", nodeStrokeOpacity)
 			.attr("stroke-width", nodeStrokeWidth*nodepageRank)
 			.selectAll("circle")
+			.attr( "class", "node" )
+
+			// .style("fill", d => 'green')
+			// .style( "stroke", '#111' )
+			// .style( "stroke-width", '2' )
 			.data(nodes)
 			.join("circle")
 			.on('click', e => console.log(simulation.find(e.x, e.y)))
+			.attr("fill", d => d.pageRank > 50 ? 'red' : 'green') // TODO color map
 			// .attr("r", nodeRadius)
 			.attr("r", nodepageRank)
-			.call(drag(simulation));
+			.call(drag(simulation))
+			;
+
+		const text = svg.selectAll("text")
+				.data( nodes )
+				.enter().append( "text" )
+				// .call( force.drag )
+				.text(d => d.id );
+				// .call(drag(simulation));
+
+		// more text stuff, may be unnecessary
+		// const node = svg.selectAll(".node");
+		// node.append( "title" )
+		// 	.text( (d) => d.id );
 
 
 			// // zoom and pan
@@ -314,7 +333,7 @@
 
 		if (W) link.attr("stroke-width", ({index: i}) => W[i]);
 		if (L) link.attr("stroke", ({index: i}) => L[i]);
-		if (G) node.attr("fill", ({index: i}) => color(G[i]));
+		// if (G) node.attr("fill", ({index: i}) => color(G[i]));
 		if (T) node.append("title").text(({index: i}) => T[i]);
 		if (invalidation != null) invalidation.then(() => simulation.stop());
 
@@ -331,18 +350,21 @@
 			d3.select('svg')
 				.call(zoom);
 
-				
+
 			link
-			.attr("x1", d => d.source.x)
-			.attr("y1", d => d.source.y)
-			.attr("x2", d => d.target.x)
-			.attr("y2", d => d.target.y)
-			.attr( "d", (d) => "M" + d.source.x + "," + d.source.y + ", " + d.target.x + "," + d.target.y);
+				.attr("x1", d => d.source.x)
+				.attr("y1", d => d.source.y)
+				.attr("x2", d => d.target.x)
+				.attr("y2", d => d.target.y)
+				.attr( "d", (d) => "M" + d.source.x + "," + d.source.y + ", " + d.target.x + "," + d.target.y);
 
 			node
-			.attr("cx", d => d.x)
-			.attr("cy", d => d.y);
+				.attr("cx", d => d.x)
+				.attr("cy", d => d.y);
 
+			text
+				.attr( "x", (d) => d.x - 5 )
+				.attr( "y", (d) => d.y + 5 )
 
 
 		}
@@ -393,7 +415,7 @@
 		width: 800,
 		height: 600,
 		invalidation: null, // a promise to stop the simulation when the cell is re-run
-		nodepageRank: d => Math.round(d.pageRank)
+		nodepageRank: d => (d.pageRank)
 	})
 
 	// svg html embedding
