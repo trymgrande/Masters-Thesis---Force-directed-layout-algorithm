@@ -120,14 +120,20 @@
 			}
 		}
 
-		// correct leaf nodes
+		// normalize sizes
 		for (let i = 0; i < graph.nodes.length; i++) {
-			if (graph.nodes[i].pageRank < 1) {
-				graph.nodes[i].pageRank = 1;
-			}
+			// if (graph.nodes[i].pageRank < 1) {
+			// 	graph.nodes[i].pageRank = 1;
+			// }
+			// else {
+				graph.nodes[i].pageRank = Math.log(graph.nodes[i].pageRank)*10;
+			// }
 		}
 		return {nodes: graph.nodes, links: graph.links};
 	}
+
+	// TODO for coloring
+	// const medianPageRank = calculateMeanPageRank()
 
 	let graph = generateCustomGraph();
 
