@@ -140,7 +140,7 @@
 	graph = setLinksPerNode(graph);
 
 	graph = calculatePageRank(graph);
-	
+
 	console.log(graph);
 
 
@@ -270,7 +270,7 @@
 			.data(nodes)
 			.join("circle")
 			.on('click', e => console.log(simulation.find(e.x, e.y)))
-			.attr("fill", d => d.pageRank > 50 ? 'red' : 'green') // TODO color map
+			.attr("fill", d => d.pageRank > 15 ? '#FB9224' : '#002E58') // TODO color map
 			// .attr("r", nodeRadius)
 			.attr("r", nodepageRank)
 			.call(drag(simulation))
@@ -280,7 +280,7 @@
 				.data( nodes )
 				.enter().append( "text" )
 				// .call( force.drag )
-				.text(d => d.id );
+				.text(d => d.pageRank > 15 ? d.id : '');
 				// .call(drag(simulation));
 
 		// more text stuff, may be unnecessary
