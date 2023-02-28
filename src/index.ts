@@ -145,7 +145,7 @@ function ForceGraph({
     links // an iterable of link objects (typically [{source, target}, …])
 }, {
     nodeId = d => d.id, // given d in nodes, returns a unique identifier (string)
-    nodeGroup: number, // given d in nodes, returns an (ordinal) value for color
+    nodeGroup, // given d in nodes, returns an (ordinal) value for color
     nodeGroups, // an array of ordinal values representing the node groups
     nodeTitle, // given d in nodes, a title string
     nodeFill = "currentColor", // node stroke fill (if not using a group color encoding)
@@ -166,7 +166,7 @@ function ForceGraph({
     height = 400, // outer height, in pixels
     invalidation, // when this promise resolves, stop the simulation
     nodepageRank = d => d.pageRank, // number of incoming links for the node
-} = {}) {
+}) {
     // Compute values.
     const N = d3.map(nodes, nodeId).map(intern);
     const LS = d3.map(links, linkSource).map(intern);
@@ -254,7 +254,7 @@ function ForceGraph({
 
     const node = svg.append("g")
         // .attr("fill", nodeFill)
-        .attr("stroke", nodeStroke*nodepageRank)
+        .attr("stroke", nodeStroke)
         .attr("stroke-opacity", nodeStrokeOpacity)
         .attr("stroke-width", nodeStrokeWidth*nodepageRank)
         .selectAll("circle")

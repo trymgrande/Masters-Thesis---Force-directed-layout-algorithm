@@ -1,3 +1,4 @@
 module.exports = {
-    entry: './src/index.ts'
+    entry: './src/index.ts',
+    watch: true
 }
