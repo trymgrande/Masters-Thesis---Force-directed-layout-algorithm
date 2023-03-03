@@ -220,9 +220,9 @@ function ForceGraph({
 
     // def for the arrow
     svg.append("svg:defs").append("svg:marker")
-        .attr("id", "arrow")
+        .attr("id", "arrowhead")
         .attr("viewBox", "0 -5 10 10")
-        .attr('refX', 0) // shift arrows off center
+        .attr('refX', 10) // shift arrows off initial position
         .attr("markerWidth", 5)
         .attr("markerHeight", 5)
         .attr("orient", "auto")
@@ -247,7 +247,7 @@ function ForceGraph({
         .enter().append("path")
         .attr("class", "link")
         .style("stroke", "#000")
-        .attr('marker-mid', d => "url(#arrow)")
+        .attr('marker-end', d => "url(#arrowhead)") // sets arrowhead position
         .style("stroke-width", 2);
 
 
@@ -354,19 +354,19 @@ function ForceGraph({
 
 
         link
-            .attr("x1", d => d.source.x)
-            .attr("y1", d => d.source.y)
-            .attr("x2", d => d.target.x)
-            .attr("y2", d => d.target.y)
-            .attr( "d", d => "M" + d.source.x + "," + d.source.y + ", " + d.target.x + "," + d.target.y)
+            // .attr("x1", d => d.source.x)
+            // .attr("y1", d => d.source.y)
+            // .attr("x2", d => d.target.x)
+            // .attr("y2", d => d.target.y)
+            // .attr( "d", d => "M" + d.source.x + "," + d.source.y + ", " + d.target.x + "," + d.target.y)
             .attr('d', function (d) {
                 const deltaX = d.target.x - d.source.x,
                     deltaY = d.target.y - d.source.y,
                     distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
                     normX = deltaX / distance,
                     normY = deltaY / distance,
-                    sourcePadding = d.left ? 17 : 12,
-                    targetPadding = d.right ? 17 : 12,
+                    sourcePadding = 0,
+                    targetPadding = d.target.pageRank,
                     sourceX = d.source.x + (sourcePadding * normX),
                     sourceY = d.source.y + (sourcePadding * normY),
                     targetX = d.target.x - (targetPadding * normX),
