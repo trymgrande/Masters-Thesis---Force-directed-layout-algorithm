@@ -117,19 +117,54 @@ function calculatePageRank(graph, iterations = 100, initialValue = 100) {
     }
 
     // normalize sizes
+    let min = Math.min(... graph.nodes.map(node => node.pageRank));
+    let max = Math.max(... graph.nodes.map(node => node.pageRank));
     for (let i = 0; i < graph.nodes.length; i++) {
-        // if (graph.nodes[i].pageRank < 1) {
-        // 	graph.nodes[i].pageRank = 1;
-        // }
-        // else {
-        graph.nodes[i].pageRank = Math.log(graph.nodes[i].pageRank)*10;
-        // }
+        graph.nodes[i].pageRank = (graph.nodes[i].pageRank - min) / (max - min);
+    }
+
+
+    // calculate clustering
+
+
+    // log transform for visualization
+    for (let i = 0; i < graph.nodes.length; i++) {
+        graph.nodes[i].pageRank = Math.log(graph.nodes[i].pageRank*100+1)*10+1;
     }
     return {nodes: graph.nodes, links: graph.links};
 }
 
-// TODO for coloring
-// const medianPageRank = calculateMeanPageRank()
+// TODO coloring/
+// calculate pagerank => normalize => calculate clustering => log transform for visualization
+function pageRankClustering(graph) {
+    const points = [0.1, 0.31,  0.32, 0.45, 0.35, 0.40, 0.5 ];
+    let clusters = [];
+    const eps = 0.2;
+    const points_sorted = points.sort();
+    console.log(points_sorted);
+    let curr_point = points_sorted[0];
+    let curr_cluster = [curr_point];
+    for (let i = 1; i < points_sorted.length; i++) {
+        let point = points_sorted[i];
+        console.log(point)
+        if (point <= curr_point + eps) {
+            curr_cluster.push(point);
+        } else {
+            clusters.push(curr_cluster);
+            curr_cluster = [point];
+        }
+        curr_point = point;
+    }
+    clusters.push(curr_cluster);
+    console.log(clusters);
+}
+
+function simplePageRankClustering(graph) {
+    //
+}
+
+pageRankClustering(-1);
+
 
 let graph = generateCustomGraph();
 
