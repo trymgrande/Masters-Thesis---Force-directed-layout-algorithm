@@ -1,0 +1,32 @@
+{
+  "name": "@disputas/unnamed",
+  "version": "0.0.1",
+  "description": "Description here",
+  "main": "lib/bundle.js",
+  "files": [
+    "lib/**/*"
+  ],
+  "types": "lib",
+  "author": "Your name",
+  "license": "none",
+  "dependencies": {
+    "d3": "^7.1.1"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "build:push": "gulp build && yalc push",
+    "run:dev": "pm2 start pm2.config.js",
+    "inspect": "pm2 inspect",
+    "restart": "pm2 restart",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
+  },
+  "peerDependencies": {
+    "d3": "^7.1.1"
+  },
+  "yalcSig": "7185a33fc5a042941ec2fcda1cac574c"
+}

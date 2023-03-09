@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "@disputas/unnamed": {
+      "signature": "7185a33fc5a042941ec2fcda1cac574c",
+      "file": true
+    }
+  }
+}

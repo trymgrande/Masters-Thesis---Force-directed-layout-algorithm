@@ -2,3 +2,8 @@ node_modules/
 .idea
 dist/
 src/index.js
+**/node_modules
+package/lib
+*/**/.*.swp
+.DS_Store
+/test/.yalc/@disputas/unnamed/lib/bundle.js

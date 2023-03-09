@@ -130,45 +130,36 @@ function calculatePageRank(graph, iterations = 100, initialValue = 100) {
     return {nodes: graph.nodes, links: graph.links};
 }
 
-// TODO for coloring
-// const medianPageRank = calculateMeanPageRank()
 
-let graph = generateCustomGraph();
-
-graph = setLinksPerNode(graph);
-
-graph = calculatePageRank(graph);
-
-console.log(graph);
 
 
 function ForceGraph({
-    nodes, // an iterable of node objects (typically [{id}, …])
-    links // an iterable of link objects (typically [{source, target}, …])
-}, {
-    nodeId = d => d.id, // given d in nodes, returns a unique identifier (string)
-    nodeGroup, // given d in nodes, returns an (ordinal) value for color
-    nodeGroups, // an array of ordinal values representing the node groups
-    nodeTitle, // given d in nodes, a title string
-    nodeFill = "currentColor", // node stroke fill (if not using a group color encoding)
-    nodeStroke = "#fff", // node stroke color
-    nodeStrokeWidth = 1.5, // node stroke width, in pixels
-    nodeStrokeOpacity = 1, // node stroke opacity
-    // nodeRadius = 5, // node radius, in pixels
-    nodeStrength,
-    linkSource = ({source}) => source, // given d in links, returns a node identifier string
-    linkTarget = ({target}) => target, // given d in links, returns a node identifier string
-    linkStroke = "#999", // link stroke color
-    linkStrokeOpacity = 0.6, // link stroke opacity
-    linkStrokeWidth = 1.5, // given d in links, returns a stroke width in pixels
-    linkStrokeLinecap = "round", // link stroke linecap
-    linkStrength,
-    colors = d3.schemeTableau10, // an array of color strings, for the node groups
-    width = 640, // outer width, in pixels
-    height = 400, // outer height, in pixels
-    invalidation, // when this promise resolves, stop the simulation
-    nodepageRank = d => d.pageRank, // number of incoming links for the node
-}) {
+                        nodes, // an iterable of node objects (typically [{id}, …])
+                        links // an iterable of link objects (typically [{source, target}, …])
+                    }, {
+                        nodeId = d => d.id, // given d in nodes, returns a unique identifier (string)
+                        nodeGroup, // given d in nodes, returns an (ordinal) value for color
+                        nodeGroups, // an array of ordinal values representing the node groups
+                        nodeTitle, // given d in nodes, a title string
+                        nodeFill = "currentColor", // node stroke fill (if not using a group color encoding)
+                        nodeStroke = "#fff", // node stroke color
+                        nodeStrokeWidth = 1.5, // node stroke width, in pixels
+                        nodeStrokeOpacity = 1, // node stroke opacity
+                        // nodeRadius = 5, // node radius, in pixels
+                        nodeStrength,
+                        linkSource = ({source}) => source, // given d in links, returns a node identifier string
+                        linkTarget = ({target}) => target, // given d in links, returns a node identifier string
+                        linkStroke = "#999", // link stroke color
+                        linkStrokeOpacity = 0.6, // link stroke opacity
+                        linkStrokeWidth = 1.5, // given d in links, returns a stroke width in pixels
+                        linkStrokeLinecap = "round", // link stroke linecap
+                        linkStrength,
+                        colors = d3.schemeTableau10, // an array of color strings, for the node groups
+                        width = 640, // outer width, in pixels
+                        height = 400, // outer height, in pixels
+                        invalidation, // when this promise resolves, stop the simulation
+                        nodepageRank = d => d.pageRank, // number of incoming links for the node
+                    }) {
     // Compute values.
     const N = d3.map(nodes, nodeId).map(intern);
     const LS = d3.map(links, linkSource).map(intern);
@@ -214,7 +205,7 @@ function ForceGraph({
 
 
     // const svg = d3.create("svg")
-    const svg = d3.select("#root").append("svg")
+    const svg = d3.select("#main")
         .attr("width", width)
         .attr("height", height)
         .attr("viewBox", [-width / 2, -height / 2, width, height])
@@ -428,21 +419,39 @@ function ForceGraph({
 }
 
 
-let chart = ForceGraph(
-    graph, {
-        nodeId: d => d.id,
-        nodeGroup: d => d.group,
-        nodeTitle: d => `${d.id}\n${d.pageRank}`,
-        linkStrokeWidth: l => Math.sqrt(l.value),
-        width: 800,
-        height: 600,
-        invalidation: null, // a promise to stop the simulation when the cell is re-run
-        nodepageRank: d => (d.pageRank)
-    }
-)
+export function drawHelloWorld2() {
+    console.log("test")
+    // TODO for coloring
+    // const medianPageRank = calculateMeanPageRank()
 
-// svg html embedding
-var element = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-chart.appendChild(element);
-// var name = document.getElementById("svg-container").;
-// console.log("name: " + name)
+    let graph = generateCustomGraph();
+
+    graph = setLinksPerNode(graph);
+
+    graph = calculatePageRank(graph);
+
+    console.log(graph);
+
+
+    let chart = ForceGraph(
+        graph, {
+            nodeId: d => d.id,
+            nodeGroup: d => d.group,
+            nodeTitle: d => `${d.id}\n${d.pageRank}`,
+            linkStrokeWidth: l => Math.sqrt(l.value),
+            width: 800,
+            height: 600,
+            invalidation: null, // a promise to stop the simulation when the cell is re-run
+            nodepageRank: d => (d.pageRank)
+        }
+    )
+
+    // svg html embedding
+    var element = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    chart.appendChild(element);
+    // var name = document.getElementById("svg-container").;
+    // console.log("name: " + name)
+    return () => {
+        d3.select("#main > *").remove();
+    };
+}

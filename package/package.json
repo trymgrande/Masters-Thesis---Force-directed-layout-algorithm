@@ -1,0 +1,46 @@
+{
+  "name": "@disputas/unnamed",
+  "version": "0.0.1",
+  "description": "Description here",
+  "main": "lib/bundle.js",
+  "files": [
+    "lib/**/*"
+  ],
+  "types": "lib",
+  "author": "Your name",
+  "license": "none",
+  "devDependencies": {
+    "@types/d3": "^7.1.0",
+    "gulp": "^4.0.2",
+    "jest": "^27.3.1",
+    "pm2": "^5.2.2",
+    "prettier": "^2.4.1",
+    "rollup": "^2.59.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-typescript2": "^0.31.1",
+    "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^4.4.4"
+  },
+  "dependencies": {
+    "d3": "^7.1.1"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "build:push": "gulp build && yalc push",
+    "run:dev": "pm2 start pm2.config.js",
+    "inspect": "pm2 inspect",
+    "restart": "pm2 restart",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
+  },
+  "peerDependencies": {
+    "d3": "^7.1.1"
+  }
+}

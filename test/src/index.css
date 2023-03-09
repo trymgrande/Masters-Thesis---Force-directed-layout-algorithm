@@ -1,0 +1,89 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.topButton {
+  border-top: 2rem solid #D61057;
+	border-left: 25px solid transparent;
+	border-right: 25px solid transparent;
+	height: 0;
+	width: 250px;
+  position: relative;
+  cursor: pointer;
+}
+
+.topButton > * {
+  height: 1.5rem;
+  width: 1.5rem;
+  position: absolute;
+  top: calc(-1rem - 0.75rem);
+  left:calc(50% - 0.75rem)
+}
+
+
+.wrapper {
+  margin: 0;
+  padding-bottom: 0;
+  border-radius: 10px;
+  height: 100px;
+  width: 90%;
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.content {
+  margin: 0;
+  height: 60px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; /* number of lines to show */
+  line-clamp: 3; 
+  line-height: 125%; 
+  color: black;
+}
+
+.tag {
+  height: 20px;
+}
+
+
+.conclusion {
+  background-color: #faf7e2;
+  border: 2px solid #ECCF16;
+}
+
+.wrapper.conclusion {
+  color: #ECCF16;
+
+}
+
+.premise {
+  background-color: #F1FCFF;
+  border: 2px solid #56CCF2;
+}
+
+.wrapper.premise {
+  color: #56CCF2;
+}
+
+.unsorted {
+  background-color: #F5F5F5;
+  border: 2px solid #797979; 
+}
+
+.wrapper.unsorted {
+  color: #797979
+}
