@@ -10,7 +10,8 @@
   "author": "Your name",
   "license": "none",
   "dependencies": {
-    "d3": "^7.1.1"
+    "d3": "^7.1.1",
+    "yalc": "^1.0.0-pre.53"
   },
   "scripts": {
     "build": "gulp build",
@@ -28,5 +29,5 @@
   "peerDependencies": {
     "d3": "^7.1.1"
   },
-  "yalcSig": "7185a33fc5a042941ec2fcda1cac574c"
+  "yalcSig": "fdcee5f9b0ac35dd56ce49faf70da72b"
 }
