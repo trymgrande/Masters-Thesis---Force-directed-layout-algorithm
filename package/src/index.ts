@@ -1,5 +1,4 @@
 // @ts-nocheck
-
 // import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 import * as d3 from "d3";
 
@@ -7,58 +6,125 @@ import * as d3 from "d3";
 // Released under the ISC license.
 // https://observablehq.com/@d3/force-directed-graph
 
-// interface Node {
-//     // TODO
-// }
-//
-// interface Link {
-//     // TODO
-// }
+interface Node {
+    id: string;
+    group: number;
+    incomingLinks?: number;
+    outgoingLinks?: number;
+    pageRank?: number;
+    index?: number;
+    // [key: string]: any;
+}
 
-function generateRandomGraph() {
-    let nodes = [];
+interface Link {
+    source: string;
+    target: string;
+    value: number;
+    strength?: number;
+}
+
+interface Graph {
+    nodes: Node[];
+    links: Link[];
+}
+
+function generateRandomGraph(): Graph {
+    let nodes: Node[] = [];
     for (let i = 0; i < 100; i++) {
         let newName = (Math.random() + 1).toString(36).substring(7);
-        let newNode = {id: newName, group: 5, incomingLinks: 0};
+        let newNode: Node = {id: newName, group: 5, incomingLinks: 0};
         nodes.push(newNode);
     }
 
-    let links = [];
+    let links: Link[] = [];
     function getRandomNodeIndex() {return Math.floor(Math.random() * nodes.length)}
     for (let i = 0; i < nodes.length*2; i++) {
         let sourceName = nodes[getRandomNodeIndex()].id;
         let targetName = nodes[getRandomNodeIndex()].id;
-        let newLink = {source: sourceName, target: targetName, value: 1};
+        let newLink: Link = {source: sourceName, target: targetName, value: 1};
         links.push(newLink);
     }
     return {nodes: nodes, links: links};
 }
 
-function generateCustomGraph() { // TODO: class for nodes and/or edges?
-    let nodes = []; // TODO: refactor into [{id: 0, name: "open borders" ... }]
+function generateCustomGraph(): Graph { // TODO: class for nodes and/or edges?
+    let nodes: Node[] = []; // TODO: refactor into [{id: 0, name: "open borders" ... }]
     // node: id (name), group 5, description, bar (float)
-    let ids = ["open borders", "welfare state objection", "benefits to immigrant-receiving countries", "global benefits", "benefits to immigrant-sending countries", "benefits to immigrants", "brain drain", "proportion of people", "burden for taxpayers", "need of the provisions", "cuisine diversity", "immigrant labor", "double world GDP", "end of poverty", "one world", "innovation case for open borders", "peace case for open borders", "ghosts versus zombies", "remittance", "develop high skills", "constrained in their policy", "benefits to migrants", "concrete benefits to migrants", "stated and revealed preferences", "losing skilled people", "acquire skills, without migrating", "developed to the developing", "partial migration"];
+    let ids: string[] = ["open borders", "welfare state objection", "benefits to immigrant-receiving countries", "global benefits", "benefits to immigrant-sending countries", "benefits to immigrants", "brain drain", "proportion of people", "burden for taxpayers", "need of the provisions", "cuisine diversity", "immigrant labor", "double world GDP", "end of poverty", "one world", "innovation case for open borders", "peace case for open borders", "ghosts versus zombies", "remittance", "develop high skills", "constrained in their policy", "benefits to migrants", "concrete benefits to migrants", "stated and revealed preferences", "losing skilled people", "acquire skills, without migrating", "developed to the developing", "partial migration"];
     for (let i = 0; i < ids.length; i++) {
-        let newNode = {id: ids[i], group: 5, incomingLinks: 0, outgoingLinks: 0, pageRank: -1};
+        let newNode: Node = {id: ids[i], group: 5, incomingLinks: 0, outgoingLinks: 0, pageRank: -1};
         nodes.push(newNode);
     }
 
-    let links = [];
-    // TODO: refactor into [{source: "x", target: "y"}]
-    let linksNames = [["proportion of people", "welfare state objection"], ["burden for taxpayers", "welfare state objection"], ["need of the provisions", "welfare state objection"], ["welfare state objection", "benefits to immigrant-receiving countries"], ["cuisine diversity", "benefits to immigrant-receiving countries"], ["immigrant labor", "benefits to immigrant-receiving countries"], ["benefits to immigrant-receiving countries", "open borders"], ["global benefits", "open borders"], ["double world GDP", "global benefits"], ["end of poverty", "global benefits"], ["one world", "global benefits"], ["innovation case for open borders", "global benefits"], ["peace case for open borders", "global benefits"], ["benefits to migrants", "open borders"], ["stated and revealed preferences", "benefits to migrants"], ["concrete benefits to migrants", "benefits to migrants"], ["benefits to immigrant-sending countries", "open borders"], ["ghosts versus zombies", "benefits to immigrant-sending countries"], ["remittance", "benefits to immigrant-sending countries"], ["develop high skills", "benefits to immigrant-sending countries"], ["constrained in their policy", "benefits to immigrant-sending countries"], ["brain drain", "benefits to immigrant-sending countries"], ["losing skilled people", "brain drain"], ["acquire skills, without migrating", "brain drain"], ["developed to the developing", "brain drain"], ["partial migration", "brain drain"]];
-    for (let i = 0; i < linksNames.length; i++) {
-        let sourceName = linksNames[i][0];
-        let	targetName = linksNames[i][1];
-        let newLink = {source: sourceName, target: targetName, value: 1, strength: 1};
-        links.push(newLink);
-    }
+    let linksNames: {source: string, target: string}[] = [
+        {source: "proportion of people", target: "welfare state objection"},
+        {source: "burden for taxpayers", target: "welfare state objection"},
+        {source: "need of the provisions", target: "welfare state objection"},
+        {source: "welfare state objection", target: "benefits to immigrant-receiving countries"},
+        {source: "cuisine diversity", target: "benefits to immigrant-receiving countries"},
+        {source: "immigrant labor", target: "benefits to immigrant-receiving countries"},
+        {source: "benefits to immigrant-receiving countries", target: "open borders"},
+        {source: "global benefits", target: "open borders"},
+        {source: "double world GDP", target: "global benefits"},
+        {source: "end of poverty", target: "global benefits"},
+        {source: "one world", target: "global benefits"},
+        {source: "innovation case for open borders", target: "global benefits"},
+        {source: "peace case for open borders", "target": "global benefits"},
+        {source: "benefits to migrants", target: "open borders"},
+        {source: "stated and revealed preferences", target: "benefits to migrants"},
+        {source: "concrete benefits to migrants", target: "benefits to migrants"},
+        {source: "benefits to immigrant-sending countries", target: "open borders"},
+        {source: "ghosts versus zombies", target: "benefits to immigrant-sending countries"},
+        {source: "remittance", target: "benefits to immigrant-sending countries"},
+        {source: "develop high skills", target: "benefits to immigrant-sending countries"},
+        {source: "constrained in their policy", target: "benefits to immigrant-sending countries"},
+        {source: "brain drain", target: "benefits to immigrant-sending countries"},
+        {source: "losing skilled people", target: "brain drain" },
+        { source: "acquire skills, without migrating", target: "brain drain" },
+        { source: "developed to the developing", target: "brain drain" },
+        { source: "partial migration", target: "brain drain"}
+    ]
+    // let linksNames = [
+    //     ["proportion of people", "welfare state objection"],
+    //     ["burden for taxpayers", "welfare state objection"],
+    //     ["need of the provisions", "welfare state objection"],
+    //     ["welfare state objection", "benefits to immigrant-receiving countries"],
+    //     ["cuisine diversity", "benefits to immigrant-receiving countries"],
+    //     ["immigrant labor", "benefits to immigrant-receiving countries"],
+    //     ["benefits to immigrant-receiving countries", "open borders"],
+    //     ["global benefits", "open borders"],
+    //     ["double world GDP", "global benefits"],
+    //     ["end of poverty", "global benefits"],
+    //     ["one world", "global benefits"],
+    //     ["innovation case for open borders", "global benefits"],
+    //     ["peace case for open borders", "global benefits"],
+    //     ["benefits to migrants", "open borders"],
+    //     ["stated and revealed preferences", "benefits to migrants"],
+    //     ["concrete benefits to migrants", "benefits to migrants"],
+    //     ["benefits to immigrant-sending countries", "open borders"],
+    //     ["ghosts versus zombies", "benefits to immigrant-sending countries"],
+    //     ["remittance", "benefits to immigrant-sending countries"],
+    //     ["develop high skills", "benefits to immigrant-sending countries"],
+    //     ["constrained in their policy", "benefits to immigrant-sending countries"],
+    //     ["brain drain", "benefits to immigrant-sending countries"],
+    //     ["losing skilled people", "brain drain"],
+    //     ["acquire skills, without migrating", "brain drain"],
+    //     ["developed to the developing", "brain drain"],
+    //     ["partial migration", "brain drain"]
+    // ];
+
+    // for (let i = 0; i < links.length; i++) {
+    //     links[i]["value"] = 1;
+    //     links[i]["strength"] = 1;
+        // let newLink: Link = {source: linksNames[i].source, target: linksNames[i].target, value: 1, strength: 1};
+        // links.push(newLink);
+    // }
+    let links: Link[] = linksNames.map(link => ({source: link.source, target: link.target, value: 1, strength: 1}))
     return {nodes: nodes, links: links};
 }
 
 
-function setLinksPerNode(graph) {
-    let nodes = graph.nodes;
-    let links = graph.links;
+function setLinksPerNode({nodes, links}: Graph): Graph {
 
     for (let i = 0; i < nodes.length; i++) {
         for (let j = 0; j < links.length; j++) {
@@ -70,101 +136,93 @@ function setLinksPerNode(graph) {
             }
         }
     }
-    graph = {nodes: nodes, links: links};
-    return graph;
+    return {nodes: nodes, links: links};
 }
 
-function findNode(id, graph) {
-    for (let i = 0; i < graph.nodes.length; i++) {
-        if (graph.nodes[i].id === id) {
-            return graph.nodes[i];
+function findNode(id: Node["id"], nodes: Node[]): Node | undefined {
+    for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].id === id) {
+            return nodes[i];
         }
     }
-    return null;
+    return;
 }
 
-function findIncomingNodes(node, graph) {
+function findIncomingNodes(node: Node, {nodes, links}: Graph) {
     let incomingNodes = [];
-    let links = graph.links;
-    let nodes = graph.nodes;
     for (let i = 0; i < links.length; i++) {
         if (links[i].target === node.id) {
-            incomingNodes.push(findNode(links[i].source, graph))
+            incomingNodes.push(findNode(links[i].source, nodes))
         }
     }
     return incomingNodes;
 }
 
-function calculatePageRank(graph, iterations = 100, initialValue = 100) {
+function calculatePageRank({nodes, links}: Graph, iterations = 100, initialValue = 100): Graph {
     /**
      * PR(A) = (incoming) => prev_PR(B)/B_out + prev_PR(C)/C_out
      */
 
     // set initial value
-    for (let k = 0; k < graph.nodes.length; k++) {
-        graph.nodes[k].pageRank = initialValue/graph.nodes.length;
+    for (let k = 0; k < nodes.length; k++) {
+        nodes[k].pageRank = initialValue/nodes.length;
     }
 
     // main calculation
     for (let i = 0; i < iterations; i++) {
-        for (let j = 0; j < graph.nodes.length; j++) {
-            let incomingNodes = findIncomingNodes(graph.nodes[j], graph);
+        for (let j = 0; j < nodes.length; j++) {
+            let incomingNodes = findIncomingNodes(nodes[j], {nodes, links});
             let pageRankIncomingValues = incomingNodes.map(incomingNode =>
                 (incomingNode.pageRank/incomingNode.outgoingLinks===Number.POSITIVE_INFINITY ? incomingNode.pageRank : incomingNode.pageRank/incomingNode.outgoingLinks));
             if (pageRankIncomingValues.length !== 0) {
-                let pageRank = pageRankIncomingValues.reduce((accumulator, value) => accumulator + value, 0);
-                graph.nodes[j].pageRank = pageRank
+                const pageRank: number = pageRankIncomingValues.reduce((accumulator, value) => accumulator + value, 0);
+                nodes[j].pageRank = pageRank
             }
         }
     }
 
     // normalize sizes
-    for (let i = 0; i < graph.nodes.length; i++) {
-        // if (graph.nodes[i].pageRank < 1) {
-        // 	graph.nodes[i].pageRank = 1;
-        // }
-        // else {
-        graph.nodes[i].pageRank = Math.log(graph.nodes[i].pageRank)*10;
-        // }
+    for (let i = 0; i < nodes.length; i++) {
+        nodes[i].pageRank = Math.log(nodes[i].pageRank)*10;
     }
-    return {nodes: graph.nodes, links: graph.links};
+    return {nodes: nodes, links: links};
 }
 
 
 
+function ForceGraph({nodes, links}: Graph) {
+        let nodeId = (d) => d.id; // given d in nodes, returns a unique identifier (string)
+        let nodeGroup = (d) => d.group; // given d in nodes, returns an (ordinal) value for color
+        let nodeGroups; // an array of ordinal values representing the node groups
+        let nodeTitle = (d) => `${d.id}\n${d.pageRank}`; // given d in nodes, a title string
+        // let nodeFill = "currentColor"; // node stroke fill (if not using a group color encoding)
+        const nodeStroke = "#fff"; // node stroke color
+        // const nodeStrokeWidth = (l: Link) => Math.sqrt(l.value);
+        let nodeStrokeWidth = 1.5; // node stroke width, in pixels
+        const nodeStrokeOpacity = 1; // node stroke opacity
+        const nodeRadius = 5; // node radius, in pixels
+        const nodeStrength = undefined;
+        const linkSource = ({source}) => source; // given d in links, returns a node identifier string
+        const linkTarget = ({target}) => target; // given d in links, returns a node identifier string
+        const linkStroke = "#999"; // link stroke color
+        const linkStrokeOpacity = 0.6; // link stroke opacity
+        const linkStrokeWidth = 1.5; // given d in links, returns a stroke width in pixels
+        const linkStrokeLinecap = "round"; // link stroke linecap
+        const linkStrength = undefined;
+        const colors = d3.schemeTableau10; // an array of color strings, for the node groups
+        // const width = 800;
+        const width = 640; // outer width, in pixels
+        // const height = 600;
+        const height = 400; // outer height, in pixels
+        const invalidation = null; // when this promise resolves, stop the simulation
+        const nodepageRank = (d) => d.pageRank; // number of incoming links for the node
 
-function ForceGraph({
-                        nodes, // an iterable of node objects (typically [{id}, …])
-                        links // an iterable of link objects (typically [{source, target}, …])
-                    }, {
-                        nodeId = d => d.id, // given d in nodes, returns a unique identifier (string)
-                        nodeGroup, // given d in nodes, returns an (ordinal) value for color
-                        nodeGroups, // an array of ordinal values representing the node groups
-                        nodeTitle, // given d in nodes, a title string
-                        nodeFill = "currentColor", // node stroke fill (if not using a group color encoding)
-                        nodeStroke = "#fff", // node stroke color
-                        nodeStrokeWidth = 1.5, // node stroke width, in pixels
-                        nodeStrokeOpacity = 1, // node stroke opacity
-                        // nodeRadius = 5, // node radius, in pixels
-                        nodeStrength,
-                        linkSource = ({source}) => source, // given d in links, returns a node identifier string
-                        linkTarget = ({target}) => target, // given d in links, returns a node identifier string
-                        linkStroke = "#999", // link stroke color
-                        linkStrokeOpacity = 0.6, // link stroke opacity
-                        linkStrokeWidth = 1.5, // given d in links, returns a stroke width in pixels
-                        linkStrokeLinecap = "round", // link stroke linecap
-                        linkStrength,
-                        colors = d3.schemeTableau10, // an array of color strings, for the node groups
-                        width = 640, // outer width, in pixels
-                        height = 400, // outer height, in pixels
-                        invalidation, // when this promise resolves, stop the simulation
-                        nodepageRank = d => d.pageRank, // number of incoming links for the node
-                    }) {
+
     // Compute values.
     const N = d3.map(nodes, nodeId).map(intern);
     const LS = d3.map(links, linkSource).map(intern);
     const LT = d3.map(links, linkTarget).map(intern);
-    if (nodeTitle === undefined) nodeTitle = (_, i) => N[i];
+    // if (nodeTitle === undefined) nodeTitle = (_, i) => N[i];
     const T = nodeTitle == null ? null : d3.map(nodes, nodeTitle);
     const G = nodeGroup == null ? null : d3.map(nodes, nodeGroup).map(intern);
     const W = typeof linkStrokeWidth !== "function" ? null : d3.map(links, linkStrokeWidth);
@@ -215,7 +273,7 @@ function ForceGraph({
     svg.append("svg:defs").append("svg:marker")
         .attr("id", "arrowhead")
         .attr("viewBox", "0 -5 10 10")
-        .attr('refX', 10) // shift arrows off initial position
+        .attr('refX', 0) // shift arrows off center
         .attr("markerWidth", 5)
         .attr("markerHeight", 5)
         .attr("orient", "auto")
@@ -249,17 +307,17 @@ function ForceGraph({
         // .attr("fill", nodeFill)
         .attr("stroke", nodeStroke)
         .attr("stroke-opacity", nodeStrokeOpacity)
-        .attr("stroke-width", nodeStrokeWidth*nodepageRank)
+        .attr("stroke-width", (n) => (nodeStrokeWidth * nodepageRank(n)))
         .selectAll("circle")
         .attr( "class", "node" )
 
-        // .style("fill", d => 'green')
+        // .style("fill", (d) => )'green')
         // .style( "stroke", '#111' )
         // .style( "stroke-width", '2' )
         .data(nodes)
         .join("circle")
         .on('click', e => console.log(simulation.find(e.x, e.y)))
-        .attr("fill", d => d.pageRank > 15 ? '#FB9224' : '#002E58') // TODO color map
+        .attr("fill", (d) => d.pageRank > 15 ? '#FB9224' : '#002E58') // TODO color map
         // .attr("r", nodeRadius)
         .attr("r", nodepageRank)
         .call(drag(simulation))
@@ -269,7 +327,7 @@ function ForceGraph({
         .data( nodes )
         .enter().append( "text" )
         // .call( force.drag )
-        .text(d => d.pageRank > 15 ? d.id : '');
+        .text((d) => d.pageRank > 15 ? d.id : '');
     // .call(drag(simulation));
 
     // more text stuff, may be unnecessary
@@ -297,8 +355,8 @@ function ForceGraph({
     // 	;
     //
     // node
-    // 	.attr("cx", d => d.x)
-    // 	.attr("cy", d => d.y);
+    // 	.attr("cx", (d) => )d.x)
+    // 	.attr("cy", (d) => )d.y);
 
     // node text
 
@@ -371,8 +429,8 @@ function ForceGraph({
             });
 
         node
-            .attr("cx", d => d.x)
-            .attr("cy", d => d.y);
+            .attr("cx", (d) => d.x)
+            .attr("cy", (d) => d.y);
 
         text
             .attr( "x", (d) => d.x - 5 )
