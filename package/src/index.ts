@@ -1,4 +1,5 @@
-// @ts-nocheck
+// // @ts-nocheck
+
 // import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 import * as d3 from "d3";
 
@@ -273,7 +274,7 @@ function ForceGraph({nodes, links}: Graph) {
     svg.append("svg:defs").append("svg:marker")
         .attr("id", "arrowhead")
         .attr("viewBox", "0 -5 10 10")
-        .attr('refX', 10) // shift arrows off center
+        .attr('refX', 0) // shift arrows head position along its link
         .attr("markerWidth", 5)
         .attr("markerHeight", 5)
         .attr("orient", "auto")
@@ -405,6 +406,9 @@ function ForceGraph({nodes, links}: Graph) {
 
 
         link
+
+            // .attr('refX', 10) // shift arrows head away from node to make it visible
+
             // .attr("x1", d => d.source.x)
             // .attr("y1", d => d.source.y)
             // .attr("x2", d => d.target.x)
@@ -417,7 +421,7 @@ function ForceGraph({nodes, links}: Graph) {
                     normX = deltaX / distance,
                     normY = deltaY / distance,
                     sourcePadding = 0,
-                    targetPadding = d.target.pageRank,
+                    targetPadding = d.target.pageRank + 10,
                     sourceX = d.source.x + (sourcePadding * normX),
                     sourceY = d.source.y + (sourcePadding * normY),
                     targetX = d.target.x - (targetPadding * normX),
